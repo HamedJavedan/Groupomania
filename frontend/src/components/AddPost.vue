@@ -13,7 +13,7 @@
                 </div>
                 <div class="row px-3 form-group">
                     <div class="justify-content-center"><input @change="onFileChange()" type="file" ref="file" name="image" class="form-control-file" id="File" accept=".jpg, .jpeg, .gif, .png" /></div>
-                    <button type="submit" class="btn btn-post ml-auto">Publish</button>
+                    <button type="submit" @click.prevent="addPost()" class="btn btn-post ml-auto">Post</button>
                 </div>
             </div>
         </div>
@@ -21,17 +21,58 @@
 </template>
 
 <script>
+import axios from "axios";
+import Swal from "sweetalert2";
 export default {
     name: "AddPost",
     data() {
         return {
             message: "",
             image: "",
+            file: null,
             userID: "",
             firstName: "",
             lastName: "",
             placeholder: ""
         };
+    },
+    methods: {
+        onFileChange() {
+            this.file = this.$refs.file.files[0];
+            this.image = URL.createObjectURL(this.file);
+        },
+        addPost() {
+            const Toast = Swal.mixin({
+                toast: true,
+                position: "top-end",
+                showConfirmButton: false,
+                timer: 1500,
+                timerProgressBar: true,
+                
+            });
+
+            const formData = new FormData();
+            formData.set("image", this.file);
+            formData.set("UserID", this.userID.toString());
+            formData.set("Message", this.message.toString());
+            axios.post("http://localhost:5000/post", formData, { headers: { Authorization:"Bearer" + localStorage.getItem("jwt") }}).then(() => {
+                Toast.fire({
+                    text: "Post created successfully!",
+                    icon: "success",
+                    willClose: () => {
+                        location.reload();
+                    },
+                });
+            }).catch((error) => {console.log(error)})
+        },
+    },
+    created: function () {
+        //Get the user logged in id from localStorage
+        const user = JSON.parse(localStorage.getItem("user"));
+        this.userID = user.UserID;
+        this.firstName = user.FirstName;
+        this.lastName = user.LastName;
+        this.placeholder = 'Hi ' + this.firstName + ', what is on your mind today?';
     },
 };
 </script>
@@ -54,7 +95,7 @@ textarea {
     padding: 15px 20px;
     border-radius: 10px;
     box-sizing: border-box;
-    color: #141414;
+    color: #616161;
     border: 1px solid #f5f5f5;
     font-size: 16px;
     letter-spacing: 1px;
@@ -66,36 +107,36 @@ textarea:focus {
     -moz-box-shadow: none !important;
     -webkit-box-shadow: none !important;
     box-shadow: none !important;
-    border: 1px solid #00000062 !important;
+    border: 1px solid #249ddb !important;
     outline-width: 0 !important;
 }
 
 ::placeholder {
-    color: hsl(0, 5%, 50%);
+    color: #bdbdbd;
 }
 
 :-ms-input-placeholder {
-    color: #a88787;
+    color: #bdbdbd;
 }
 
 ::-ms-input-placeholder {
-    color: #c2abab;
+    color: #bdbdbd;
 }
 
 .btn-post {
     border-radius: 50px;
     padding: 4px 10px;
-    background-color: #01f5fdb8;
-    color: #000000;
+    background-color: #249ddb;
+    color: #FECABF;
 }
 .btn-post:hover {
-    background-color: #01a1fdce;
+    background-color: #249ddb;
     color: white;
 }
 
 .options {
     font-size: 23px;
-    color: #796464;
+    color: #757575;
     cursor: pointer;
 }
 

@@ -6,7 +6,7 @@
             </template>
             <template v-slot:link>
                 <div>Not a member?</div>
-                <router-link to="/signup">Register here!</router-link>
+                <router-link to="/signup" class="underlineHover">Register here!</router-link>
             </template>
         </LoginSignupCard>
     </div>
@@ -24,3 +24,5 @@ export default {
     },
 };
 </script>
+
+<style></style>

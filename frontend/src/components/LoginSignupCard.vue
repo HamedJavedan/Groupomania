@@ -26,7 +26,11 @@ export default {
 };
 </script>
 <style>
+*:focus {
+    outline: none;
+}
+
 #icon {
-    width: 150px;
+    width: 200px;
 }
 </style>

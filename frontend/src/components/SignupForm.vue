@@ -1,5 +1,6 @@
 <template>
-    <form autocomplete="off">
+
+    <form @submit.prevent="handleSubmit" autocomplete="off">
         <div class="form-row">
             <div class="col">
                 <div class="form-group second">
@@ -37,10 +38,12 @@
                     <input type="password" v-model="confirmPassword" id="confirmPassword" name="confirmPassword" placeholder="Confirm your Password" class="form-control" :class="{ 'is-invalid': isSubmitted && $v.confirmPassword.$error }" />
                     <div v-if="isSubmitted && $v.confirmPassword.$error" class="invalid-feedback">
                         <span v-if="!$v.confirmPassword.required">Confirm Password field is required</span>
+                        <span v-else-if="!$v.confirmPassword.sameAsPassword">Passwords should be matched</span>
                     </div>
                 </div>
             </div>
         </div>
+
         <div class="form-row">
             <div class="col">
                 <div class="form-group second">
@@ -63,7 +66,8 @@
 </template>
 <script>
 import { required, email, minLength, sameAs } from "vuelidate/lib/validators";
-
+import axios from "axios";
+import Swal from "sweetalert2";
 
 export default {
     name: "SignupForm",
@@ -96,6 +100,58 @@ export default {
         confirmPassword: {
             required,
             sameAsPassword: sameAs("password"),
+        },
+    },
+    methods: {
+        //create a new user
+        handleSubmit() {
+            this.isSubmitted = true;
+            this.$v.$touch();
+            if (this.$v.$invalid) {
+                return;
+            } else {
+                axios
+                    .post("http://localhost:5000/auth/signup", {
+                        FirstName: this.firstName,
+                        LastName: this.lastName,
+                        Email: this.email,
+                        Password: this.password,
+                    })
+                    .then((data) => {
+                        console.log(data);
+                        let timerInterval;
+                        Swal.fire({
+                            icon: "success",
+                            title: "Thank you for joining us!",
+                            html: "You will be redirected to the login page in <b></b> seconds.",
+                            timer: 5000,
+                            timerProgressBar: true,
+                            didOpen: () => {
+                                Swal.showLoading();
+                                timerInterval = setInterval(() => {
+                                    Swal.getHtmlContainer().querySelector("b").textContent = (Swal.getTimerLeft() / 1000).toFixed(0);
+                                }, 100);
+                            },
+                            willClose: () => {
+                                clearInterval(timerInterval);
+                            },
+                        }).then((result) => {
+                            if (result.dismiss === Swal.DismissReason.timer) {
+                                this.$router.push("/");
+                            }
+                        });
+                    })
+                    .catch((error) => {
+                        console.log(error.response.data.error);
+                        Swal.fire({
+                            icon: "error",
+                            title: "This email address is already being used",
+                            text: "If it's you, go back and Login. Otherwise, choose another email.",
+                            showConfirmButton: false,
+                            showCancelButton: true,
+                        });
+                    });
+            }
         },
     },
 };

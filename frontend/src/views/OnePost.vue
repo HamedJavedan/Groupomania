@@ -34,6 +34,8 @@
     </div>
 </template>
 <script>
+import axios from "axios";
+import Swal from "sweetalert2";
 import NavBar from "../components/NavBar.vue";
 export default {
     name: "OnePost",
@@ -47,6 +49,87 @@ export default {
             seenPost: [],
             seens: [],
         };
+    },
+    methods: {
+        async getOnePost() {
+            try {
+                const response = await axios.get(`http://localhost:5000/post/${this.$route.params.id}`, { headers: { Authorization: "Bearer " + localStorage.getItem("jwt") } });
+                this.post = response.data;
+            } catch (err) {
+                console.log(err);
+            }
+        },
+        async deletePost(id) {
+            try {
+                await axios.delete(`http://localhost:5000/post/${id}`, { headers: { Authorization: "Bearer " + localStorage.getItem("jwt") } });
+                this.$router.push("/home");
+            } catch (err) {
+                console.log(err);
+            }
+        },
+        //On change event, mark post as read
+        markRead(id, event) {
+            const Toast = Swal.mixin({
+                toast: true,
+                position: "top-end",
+                showConfirmButton: false,
+                timer: 1500,
+                timerProgressBar: true,
+            });
+            // If checkbox is checked
+            if (event.target.checked) {
+                axios
+                    .post(
+                        "http://localhost:5000/seen",
+                        {
+                            UserID: this.userID,
+                            PostID: id,
+                        },
+                        { headers: { Authorization: "Bearer " + localStorage.getItem("jwt") } }
+                    )
+                    .then(() => {
+                        Toast.fire({
+                            text: "Marked as read!",
+                            icon: "success",
+                            willClose: () => {
+                                location.reload();
+                            },
+                        });
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    });
+            }
+        },
+        // Get all the post read by the user logged in
+        async checkRead() {
+            try {
+                const response = await axios.get(`http://localhost:5000/seen/auth/${this.userID}`, { headers: { Authorization: "Bearer " + localStorage.getItem("jwt") } });
+                this.seenPost = response.data.seens;
+                // Filter the respons to return the PostID
+                let valObj = this.seenPost.filter(function (elem) {
+                    if (elem.UserID) return elem.PostID;
+                });
+                // Push all the PostID in the Array seenPostID
+                for (let i = 0; i < valObj.length; i++) {
+                    let seenPostID = valObj[i].PostID;
+                    this.seens.push(seenPostID);
+                }
+
+                //console.log(this.seens); TEST
+            } catch (err) {
+                console.log(err);
+            }
+        },
+    },
+    created() {
+        //Get the userid from localStorage
+        const user = JSON.parse(localStorage.getItem("user"));
+        this.userID = user.UserID;
+    },
+    mounted() {
+        this.getOnePost();
+        this.checkRead();
     },
 };
 </script>

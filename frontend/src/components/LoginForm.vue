@@ -1,6 +1,6 @@
 <template>
-    <form>
-        <div class="form-group fadeIn second">
+    <form @submit.prevent="handleSubmit">
+        <div class="form-group second">
             <label for="email"><i class="fas fa-at"></i> Email address</label>
             <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" v-model="email" :class="{ 'is-invalid': isSubmitted && $v.email.$error }" />
             <div v-if="isSubmitted && $v.email.$error" class="invalid-feedback">
@@ -15,12 +15,13 @@
                 <span v-if="!$v.password.required">Password field is required</span>
             </div>
         </div>
-        <button class="btn fourth">Login</button>
+        <button class="btn btn-info fourth">Login</button>
     </form>
 </template>
 <script>
 import { required, email } from "vuelidate/lib/validators";
-
+import axios from "axios";
+import Swal from "sweetalert2";
 
 export default {
     name: "LoginForm",
@@ -28,6 +29,7 @@ export default {
         return {
             email: "",
             password: "",
+            isSubmitted: false,
         };
     },
 
@@ -40,10 +42,69 @@ export default {
             required,
         },
     },
+    methods: {
+        //on submit login an add user and jwt in localStorage
+        handleSubmit() {
+            this.isSubmitted = true;
+            this.$v.$touch();
+            if (this.$v.$invalid) {
+                return;
+            } else {
+                axios
+                    .post("http://localhost:5000/auth/login", {
+                        Email: this.email,
+                        Password: this.password,
+                    })
+                    .then((res) => {
+                        localStorage.setItem("user", JSON.stringify(res.data));
+                        localStorage.setItem('jwt',res.data.token)
+                        const user = JSON.parse(localStorage.getItem("user"));
+                        const FullName = user.FirstName + " " + user.LastName;
+                        let timerInterval;
+                        Swal.fire({
+                            icon: "success",
+                            title: "Welcome back " + FullName + "!",
+                            html: "You will be redirected to the home page in <b></b> seconds.",
+                            timer: 3000,
+                            timerProgressBar: true,
+                            didOpen: () => {
+                                Swal.showLoading();
+                                timerInterval = setInterval(() => {
+                                    Swal.getHtmlContainer().querySelector("b").textContent = (Swal.getTimerLeft() / 1000).toFixed(0);
+                                }, 100);
+                            },
+                            willClose: () => {
+                                clearInterval(timerInterval);
+                            },
+                        }).then((result) => {
+                            if (result.dismiss === Swal.DismissReason.timer) {
+                                this.$router.push({ path: "/home" });
+                            }
+                        });
+                    })
+                    .catch((error) => {
+                        const codeError = error.message.split("code ")[1];
+                        let messageError = "";
+                        // Catch the error from response
+                        switch (codeError) {
+                            case "401":
+                                messageError = "The password you entered is incorrect. Please try again.";
+                                break;
+                            case "404":
+                                messageError = "The email address that you've entered doesn't match any account.";
+                                break;
+                        }
+                        // Display the error to the user
+                        Swal.fire({
+                            icon: "error",
+                            title: "Ops!",
+                            text: messageError || error.message,
+                            showConfirmButton: false,
+                            showCancelButton: true,
+                        });
+                    });
+            }
+        },
+    },
 };
 </script>
-<style>
-.btn {
-    background-color: rgb(0, 174, 255);
-}
-</style>

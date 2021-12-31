@@ -2,6 +2,7 @@
     <div class="Signup">
         <LoginSignupCard>
             <template v-slot:form>
+                <!-- Registration form -->
                 <SignupForm></SignupForm>
             </template>
             <template v-slot:link>

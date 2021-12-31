@@ -31,7 +31,14 @@ export default {
             userID: ""
         };
     },
+    created: function () {
+        //Get the user logged in id from localStorage
+        const user = JSON.parse(localStorage.getItem("user"));
+        this.userName = user.FirstName + " " + user.LastName;
+        this.userID = user.UserID
+    },
     methods: {
+        //on signout clear the local storage and redirect to login page
         signOut() {
             localStorage.clear();
             let timerInterval;
@@ -61,12 +68,12 @@ export default {
 </script>
 <style>
 .navbar {
-    background: #018cfdb8;
+    background: #249ddb;
     box-shadow: 0 30px 60px 0 rgba(0, 0, 0, 0.145);
 }
 .nav-link,
 .navbar-brand {
-    color: rgb(0, 0, 0);
+    color: #fff;
     cursor: pointer;
 }
 .nav-link {

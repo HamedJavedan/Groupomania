@@ -6,6 +6,15 @@
 <script>
 
 export default {
+    // set a title for pages
+    watch: {
+        $route: {
+            handler: (to) => {
+                document.title = to.meta.title || "Your Website";
+            },
+            immediate: true,
+        },
+    },
     
 };
 </script>
