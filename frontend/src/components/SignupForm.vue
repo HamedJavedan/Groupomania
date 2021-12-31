@@ -58,7 +58,7 @@
 
             <div class="col align-self-end">
                 <div class="form-group third">
-                    <button class="btn btn-danger fourth">Signup</button>
+                    <button class="btn btn-info fourth">Signup</button>
                 </div>
             </div>
         </div>
