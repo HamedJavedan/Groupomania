@@ -13,7 +13,7 @@
                 </div>
                 <div class="row px-3 form-group">
                     <div class="justify-content-center"><input @change="onFileChange()" type="file" ref="file" name="image" class="form-control-file" id="File" accept=".jpg, .jpeg, .gif, .png" /></div>
-                    <button type="submit" @click.prevent="addPost()" class="btn btn-post ml-auto">Post</button>
+                    <button type="submit" @click.prevent="addPost()" class="btn btn-post ml-auto" :disabled="disabled">Post</button>
                 </div>
             </div>
         </div>
@@ -35,6 +35,11 @@ export default {
             lastName: "",
             placeholder: ""
         };
+    },
+    computed: {
+        disabled () {
+            return !(this.message || this.file) 
+        }
     },
     methods: {
         onFileChange() {

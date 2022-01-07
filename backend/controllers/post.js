@@ -36,6 +36,9 @@ export const getPostById = async (req, res) => {
 export const createPost = async (req, res) => {
     try {
         let image = null;
+        if (!req.file && !req.body.Message) {
+            throw new Error('content required');
+        }
         if (req.file) {
             image = `${req.protocol}://${req.get("host")}/images/${req.file.filename}`
         }

@@ -35,7 +35,7 @@ const routes = [
     name: 'Home',
     component: Home,
     meta: {
-      requiresAuth: false,
+      requiresAuth: true,
       title: 'Groupomania | Home'
     },
   },
@@ -44,7 +44,7 @@ const routes = [
     name: 'Profile',
     component: Profile,
     meta: {
-      requiresAuth: false,
+      requiresAuth: true,
       title: 'Groupomania | Profile'
     }
   },
@@ -53,7 +53,7 @@ const routes = [
     name: 'OnePost',
     component: OnePost,
     meta: {
-      requiresAuth: false,
+      requiresAuth: true,
       title: 'Groupomania | Post'
     }
   },
@@ -62,7 +62,7 @@ const routes = [
     name: 'EditPost',
     component: EditPost,
     meta: {
-      requiresAuth: false,
+      requiresAuth: true,
       title: 'Groupomania | Edit your Post'
     },
   },
