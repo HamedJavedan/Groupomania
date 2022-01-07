@@ -42,9 +42,10 @@ export default {
         };
     },
     methods: {
+ 
         getOnePost() {
             axios
-                .get(`http://localhost:5000/post/${this.$route.params.id}`, { headers: { Authorization:"Bearer " + localStorage.getItem("jwt") }})
+                .get(`http://localhost:5000/post/${this.$route.params.id}`, { headers: { "Authorization":"Bearer " + localStorage.getItem("jwt") }})
                 .then((response) => {
                     this.post = response.data;
                     this.newMessage = this.post.Message;
@@ -71,7 +72,7 @@ export default {
             formData.set("image", this.file);
             formData.set("Message", this.newMessage.toString());
             axios
-                .put(`http://localhost:5000/post/${this.$route.params.id}`, formData, { headers: { Authorization:"Bearer " + localStorage.getItem("jwt") }})
+                .put(`http://localhost:5000/post/${this.$route.params.id}`, formData, { headers: { "Authorization":"Bearer " + localStorage.getItem("jwt") }})
                 .then(() => {
                     Toast.fire({
                         text: "Post update successfully!",
@@ -87,7 +88,7 @@ export default {
         },
     },
     created() {
-        //Get the user id from localStorage
+        //Get the user logged in id from localStorage
         const user = JSON.parse(localStorage.getItem("user"));
         this.userID = user.UserID;
 
@@ -99,7 +100,7 @@ export default {
         let userLogged = user.UserID;
         console.log(userLogged);
         axios
-            .get(`http://localhost:5000/post/${this.$route.params.id}`, { headers: { Authorization:"Bearer " + localStorage.getItem("jwt") }})
+            .get(`http://localhost:5000/post/${this.$route.params.id}`, { headers: { "Authorization":"Bearer " + localStorage.getItem("jwt") }})
             .then((response) => {
                 console.log(response);
                 let userPost = response.data.UserID;

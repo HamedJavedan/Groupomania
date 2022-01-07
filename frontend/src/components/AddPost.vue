@@ -50,12 +50,12 @@ export default {
                 timerProgressBar: true,
                 
             });
-
+            //Create a formData that contain the file to send with post request
             const formData = new FormData();
             formData.set("image", this.file);
             formData.set("UserID", this.userID.toString());
             formData.set("Message", this.message.toString());
-            axios.post("http://localhost:5000/post", formData, { headers: { Authorization:"Bearer" + localStorage.getItem("jwt") }}).then(() => {
+            axios.post("http://localhost:5000/post", formData, { headers: { "Authorization":"Bearer " + localStorage.getItem("jwt") }}).then(() => {
                 Toast.fire({
                     text: "Post created successfully!",
                     icon: "success",
@@ -127,7 +127,7 @@ textarea:focus {
     border-radius: 50px;
     padding: 4px 10px;
     background-color: #249ddb;
-    color: #FECABF;
+    color: #585657;
 }
 .btn-post:hover {
     background-color: #249ddb;

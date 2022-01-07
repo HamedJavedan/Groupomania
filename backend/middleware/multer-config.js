@@ -1,5 +1,6 @@
 import multer, { diskStorage } from 'multer';
 
+ 
 const MIME_TYPES = {
   'image/jpg': 'jpg',
   'image/jpeg': 'jpg',
